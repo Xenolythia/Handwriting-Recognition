@@ -89,7 +89,7 @@ if __name__ == "__main__":
             model.backward(dloss)
             # 参数更新
             model.step(lr)
-            exit(0)
+            # exit(0)
 
             if id_1 % print_freq == 0:
                 print("Train Epoch %d, iter %d, loss: %.6f" % (idx_epoch, id_1, loss))
