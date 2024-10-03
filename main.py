@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 
-from components import CrossEntropy, FullyConnectLayer, ReluLayer
+from components import CrossEntropy, FullyConnectLayer, ReluLayer, SigmoidLayer
 from dataloader import DataLoader
 
 
@@ -18,7 +18,7 @@ class MlpMnistModel:
         self.fc2 = FullyConnectLayer(self.hidden1, self.hidden2)
         self.fc3 = FullyConnectLayer(self.hidden2, self.out_size)
         self.relu1 = ReluLayer()
-        self.relu2 = ReluLayer()
+        self.sigmoid2 = SigmoidLayer()
 
         # 定义需要更新参数的组件列表
         self.update_layer_list = [self.fc1, self.fc2, self.fc3]
@@ -28,14 +28,14 @@ class MlpMnistModel:
         x = self.fc1.forward(x)
         x = self.relu1.forward(x)
         x = self.fc2.forward(x)
-        x = self.relu2.forward(x)
+        x = self.sigmoid2.forward(x)
         x = self.fc3.forward(x)
         return x
 
     def backward(self, dloss):
         # 反向传播流程
         dh2 = self.fc3.backward(dloss)
-        dh2 = self.relu2.backward(dh2)
+        dh2 = self.sigmoid2.backward(dh2)
         dh1 = self.fc2.backward(dh2)
         dh1 = self.relu1.backward(dh1)
         dh1 = self.fc1.backward(dh1)
@@ -63,9 +63,9 @@ class MlpMnistModel:
 if __name__ == "__main__":
     # 设置
     mnist_npy_dir = "mnist"
-    epochs = 10
+    epochs = 18
     batch_size = 64
-    lr = 0.01
+    lr = 0.012
     print_freq = 100
     train_data_loader = DataLoader(mnist_npy_dir, batch_size=batch_size, mode="train")
     val_data_loader = DataLoader(mnist_npy_dir, batch_size=batch_size, mode="val")
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     # 初始化损失函数
     criterion = CrossEntropy()
 
-    best_loss = 999
+    best_loss = 0.02
     for idx_epoch in range(epochs):
         train_data_loader.shuffle_data()
         # 训练
